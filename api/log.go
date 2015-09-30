@@ -15,8 +15,10 @@
 package api
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 type logWriter struct {
@@ -25,7 +27,7 @@ type logWriter struct {
 }
 
 func newLogWriter(w http.ResponseWriter) *logWriter {
-	return &logWriter{writer: w}
+	return &logWriter{writer: w, statusCode: 200}
 }
 
 func (w *logWriter) Header() http.Header { return w.writer.Header() }
@@ -41,7 +43,14 @@ func (w *logWriter) WriteHeader(code int) {
 func handleLog(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		logWriter := newLogWriter(w)
+		startTime := time.Now()
+
 		f(logWriter, r)
-		log.Printf("%s\t%d %s", r.Method, logWriter.statusCode, r.URL.Path)
+
+		log.Printf("%s\t%d %s %s",
+			r.Method,
+			logWriter.statusCode,
+			r.URL.Path,
+			time.Since(startTime))
 	}
 }
