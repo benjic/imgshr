@@ -20,6 +20,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/benjic/shrturl/urls"
 	"github.com/gorilla/mux"
 )
 
@@ -34,7 +35,7 @@ func Register(router *mux.Router) (api *ShrtURLAPI) {
 	api = &ShrtURLAPI{}
 	api.router = router.PathPrefix(fmt.Sprintf("/%s", Version)).Subrouter()
 
-	registerShrtURLAPI(api)
+	urls.Register(api.handleFunc)
 
 	return
 }

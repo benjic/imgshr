@@ -12,22 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package api
+package urls
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
-type urlHandler struct {
-}
+type urlHandler struct{}
 
-func registerShrtURLAPI(api *ShrtURLAPI) (err error) {
+// Register adds the urls resource to the given api instance
+func Register(register func(string, http.HandlerFunc)) (err error) {
 
 	urls := &urlHandler{}
-	api.handleFunc("/url", urls.list())
+	register("/urls", urls.list())
 
 	return
 }
 
 func (h *urlHandler) list() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("You've made it!")
 	}
 }
