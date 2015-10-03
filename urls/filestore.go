@@ -21,6 +21,6 @@ type URLModel struct{ id, url string }
 
 type fileStore struct{ file io.ReadWriter }
 
-func (*fileStore) list() []URLModel        { return nil }
-func (*fileStore) find() (URLModel, error) { return URLModel{}, nil }
-func (*fileStore) add() (URLModel, error)  { return URLModel{}, nil }
+func (*fileStore) list() []URLModel                 { return nil }
+func (*fileStore) find(id string) (URLModel, error) { return URLModel{}, nil }
+func (*fileStore) add(model URLModel) error         { return nil }

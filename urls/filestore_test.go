@@ -31,13 +31,106 @@ const testUrls string = `[
   }
 ]`
 
-func createMockFileStore(input string) *fileStore {
+func createMockFileStore(input string) (*fileStore, *bytes.Buffer) {
 	strReader := bytes.NewReader([]byte(input))
-	mockFile := bufio.NewReadWriter(bufio.NewReader(strReader), nil)
+	bufWriter := bytes.NewBuffer(nil)
+	mockFile := bufio.NewReadWriter(bufio.NewReader(strReader), bufio.NewWriter(bufWriter))
 
-	return &fileStore{file: mockFile}
+	return &fileStore{file: mockFile}, bufWriter
 }
 
-func TestFileStoreListsURLs(t *testing.T) {}
-func TestFileStoreFindURL(t *testing.T)   {}
-func TestFileStoreAddURL(t *testing.T)    {}
+func TestFileStoreListsURLs(t *testing.T) {
+	cases := []struct {
+		source string
+		models []URLModel
+	}{
+		{
+			testUrls,
+			[]URLModel{
+				URLModel{"abc", "http://test.com/blah"},
+				URLModel{"def", "ssh://github.com:taco/repo.git"},
+			},
+		},
+	}
+
+	for _, c := range cases {
+		store, _ := createMockFileStore(c.source)
+		urls := store.list()
+
+		if len(urls) != len(c.models) {
+			t.Errorf("Expected filestore to return %d items; got: %d", len(c.models), len(urls))
+		}
+
+		for i, url := range urls {
+			if url.id != c.models[i].id {
+				t.Errorf("Expected model id to be %s; got: %s", c.models[i].id, url.id)
+			}
+
+			if url.url != c.models[i].url {
+				t.Errorf("Expected model url to be %s; got: %s", c.models[i].url, url.url)
+			}
+		}
+	}
+}
+
+func TestFileStoreFindURL(t *testing.T) {
+	cases := []struct {
+		source string
+		model  URLModel
+		err    error
+	}{
+		{
+			testUrls,
+			URLModel{"def", "ssh://github.com:taco/repo.git"},
+			nil,
+		},
+	}
+
+	for _, c := range cases {
+		store, _ := createMockFileStore(c.source)
+		url, err := store.find(c.model.id)
+
+		if err != c.err {
+			t.Errorf("Expected to get error %s; got: %s", c.err, err)
+		}
+
+		if url.id != c.model.id {
+			t.Errorf("Expected model id to be %s; got: %s", c.model.id, url.id)
+		}
+
+		if url.url != c.model.url {
+			t.Errorf("Expected model id to be %s; got: %s", c.model.url, url.url)
+		}
+	}
+}
+
+func TestFileStoreAddURL(t *testing.T) {
+	cases := []struct {
+		input, output string
+		model         URLModel
+		err           error
+	}{
+		{
+			"[]",
+			"[{'id':'def', 'url':'ssh://github.com:taco/repo.git'}]",
+			URLModel{"def", "ssh://github.com:taco/repo.git"},
+			nil,
+		},
+	}
+
+	for _, c := range cases {
+
+		store, buf := createMockFileStore(c.input)
+		err := store.add(c.model)
+
+		output := string(buf.Bytes())
+
+		if err != c.err {
+			t.Errorf("Expected to get error %s; got: %s", c.err, err)
+		}
+
+		if string(buf.Bytes()) != c.output {
+			t.Errorf("Expected to write output:\n%s\n\ngot: %s\n", c.output, output)
+		}
+	}
+}
