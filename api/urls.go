@@ -11,19 +11,23 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package main
 
-import (
-	"log"
-	"net/http"
+package api
 
-	"github.com/benjic/imgshr/api"
-	"github.com/gorilla/mux"
-)
+import "net/http"
 
-func main() {
-	r := mux.NewRouter()
-	api.Register(r)
+type urlHandler struct {
+}
 
-	log.Fatal(http.ListenAndServe(":8080", r))
+func registerShrtURLAPI(api *ShrtURLAPI) (err error) {
+
+	urls := &urlHandler{}
+	api.handleFunc("/url", urls.list())
+
+	return
+}
+
+func (h *urlHandler) list() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+	}
 }

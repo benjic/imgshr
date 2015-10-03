@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package api provides a backing api for the imgshr application
+// Package api provides a backing api for the shrturl application
 package api
 
 import (
@@ -26,20 +26,20 @@ import (
 // Version identifies the api version
 const Version = "v1"
 
-// ImgshrAPI is a handler for imgshr API calls
-type ImgshrAPI struct{ router *mux.Router }
+// ShrtURLAPI is a handler for shrturl API calls
+type ShrtURLAPI struct{ router *mux.Router }
 
 // Register attaches a api to the given router.
-func Register(router *mux.Router) (api *ImgshrAPI) {
-	api = &ImgshrAPI{}
+func Register(router *mux.Router) (api *ShrtURLAPI) {
+	api = &ShrtURLAPI{}
 	api.router = router.PathPrefix(fmt.Sprintf("/%s", Version)).Subrouter()
 
-	// TODO: Write api handlers
+	registerShrtURLAPI(api)
 
 	return
 }
 
-func (api *ImgshrAPI) handleFunc(path string, f http.HandlerFunc) {
+func (api *ShrtURLAPI) handleFunc(path string, f http.HandlerFunc) {
 	api.router.HandleFunc(path, handleLog(handleError(f)))
 }
 
