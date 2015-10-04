@@ -46,7 +46,7 @@ func handleLog(f http.HandlerFunc) http.HandlerFunc {
 
 		f(logWriter, r)
 
-		log.Printf("%s\t%d %s %s",
+		log.Printf("% 6s %03d %s %s",
 			r.Method,
 			logWriter.statusCode,
 			r.URL.Path,
