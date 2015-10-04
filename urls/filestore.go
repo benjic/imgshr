@@ -14,13 +14,56 @@
 
 package urls
 
-import "io"
+import (
+	"bufio"
+	"encoding/json"
+	"errors"
+)
+
+// ErrorModelNotFound indicates that a model was not found
+var ErrorModelNotFound = errors.New("Model was not found")
 
 // A URLModel represents a url resource
-type URLModel struct{ id, url string }
+type URLModel struct {
+	ID  string
+	URL string
+}
 
-type fileStore struct{ file io.ReadWriter }
+type fileStore struct{ file *bufio.ReadWriter }
 
-func (*fileStore) list() []URLModel                 { return nil }
-func (*fileStore) find(id string) (URLModel, error) { return URLModel{}, nil }
-func (*fileStore) add(model URLModel) error         { return nil }
+func (s *fileStore) list() (models []URLModel) {
+	dec := json.NewDecoder(s.file)
+	dec.Decode(&models)
+
+	return
+}
+
+func (s *fileStore) find(id string) (URLModel, error) {
+	var models []URLModel
+
+	dec := json.NewDecoder(s.file)
+	dec.Decode(&models)
+
+	for _, model := range models {
+		if model.ID == id {
+			return model, nil
+		}
+	}
+	return URLModel{}, ErrorModelNotFound
+}
+
+func (s *fileStore) add(model URLModel) error {
+	var models []URLModel
+
+	dec := json.NewDecoder(s.file)
+	dec.Decode(&models)
+
+	models = append(models, model)
+
+	enc := json.NewEncoder(s.file)
+	enc.Encode(models)
+
+	s.file.Flush()
+
+	return nil
+}

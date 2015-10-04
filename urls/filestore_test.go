@@ -22,12 +22,12 @@ import (
 
 const testUrls string = `[
   {
-    'id': 'abc',
-    'url': 'http://test.com/blah'
+    "ID": "abc",
+    "url": "http://test.com/blah"
   },
   {
-    'id': 'def',
-    'url': 'ssh://github.com:taco/repo.git'
+    "ID": "def",
+    "url": "ssh://github.com:taco/repo.git"
   }
 ]`
 
@@ -62,12 +62,12 @@ func TestFileStoreListsURLs(t *testing.T) {
 		}
 
 		for i, url := range urls {
-			if url.id != c.models[i].id {
-				t.Errorf("Expected model id to be %s; got: %s", c.models[i].id, url.id)
+			if url.ID != c.models[i].ID {
+				t.Errorf("Expected model ID to be %s; got: %s", c.models[i].ID, url.ID)
 			}
 
-			if url.url != c.models[i].url {
-				t.Errorf("Expected model url to be %s; got: %s", c.models[i].url, url.url)
+			if url.URL != c.models[i].URL {
+				t.Errorf("Expected model url to be %s; got: %s", c.models[i].URL, url.URL)
 			}
 		}
 	}
@@ -84,22 +84,29 @@ func TestFileStoreFindURL(t *testing.T) {
 			URLModel{"def", "ssh://github.com:taco/repo.git"},
 			nil,
 		},
+		{
+			testUrls,
+			URLModel{"xyz", "http://www.tacobell.com"},
+			ErrorModelNotFound,
+		},
 	}
 
 	for _, c := range cases {
 		store, _ := createMockFileStore(c.source)
-		url, err := store.find(c.model.id)
+		url, err := store.find(c.model.ID)
+		if c.err != nil {
+			if err != c.err {
+				t.Errorf("Expected to get error %s; got: %s", c.err, err)
+			}
+		} else {
 
-		if err != c.err {
-			t.Errorf("Expected to get error %s; got: %s", c.err, err)
-		}
+			if url.ID != c.model.ID {
+				t.Errorf("Expected model ID to be %s; got: %s", c.model.ID, url.ID)
+			}
 
-		if url.id != c.model.id {
-			t.Errorf("Expected model id to be %s; got: %s", c.model.id, url.id)
-		}
-
-		if url.url != c.model.url {
-			t.Errorf("Expected model id to be %s; got: %s", c.model.url, url.url)
+			if url.URL != c.model.URL {
+				t.Errorf("Expected model ID to be %s; got: %s", c.model.URL, url.URL)
+			}
 		}
 	}
 }
@@ -112,7 +119,7 @@ func TestFileStoreAddURL(t *testing.T) {
 	}{
 		{
 			"[]",
-			"[{'id':'def', 'url':'ssh://github.com:taco/repo.git'}]",
+			"[{\"ID\":\"def\",\"URL\":\"ssh://github.com:taco/repo.git\"}]\n",
 			URLModel{"def", "ssh://github.com:taco/repo.git"},
 			nil,
 		},
@@ -121,16 +128,16 @@ func TestFileStoreAddURL(t *testing.T) {
 	for _, c := range cases {
 
 		store, buf := createMockFileStore(c.input)
-		err := store.add(c.model)
 
-		output := string(buf.Bytes())
+		err := store.add(c.model)
+		output := buf.String()
 
 		if err != c.err {
 			t.Errorf("Expected to get error %s; got: %s", c.err, err)
 		}
 
-		if string(buf.Bytes()) != c.output {
-			t.Errorf("Expected to write output:\n%s\n\ngot: %s\n", c.output, output)
+		if output != c.output {
+			t.Errorf("Expected to write output:\nExpected: '%s'\n     got: '%s'\n", c.output, output)
 		}
 	}
 }
