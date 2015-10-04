@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -58,7 +59,11 @@ func (h *urlHandler) item() http.HandlerFunc {
 			return
 		}
 
-		json.NewEncoder(w).Encode(model)
+		if strings.Contains(r.Header.Get("Accept"), "text/html") {
+			http.Redirect(w, r, model.URL, http.StatusTemporaryRedirect)
+		} else {
+			json.NewEncoder(w).Encode(model)
+		}
 	}
 }
 
