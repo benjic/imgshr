@@ -14,16 +14,24 @@
 
 package urls
 
+import (
+	"math/rand"
+	"time"
+)
+
 type memoryStore struct {
 	models []urlModel
 }
 
 func (s *memoryStore) list() []urlModel {
+	s.delay()
 	return s.models
 }
 
 func (s *memoryStore) find(id modelID) (urlModel, error) {
+	s.delay()
 	for _, model := range s.models {
+		time.Sleep(10 * time.Millisecond)
 		if model.ID == id {
 			return model, nil
 		}
@@ -33,5 +41,11 @@ func (s *memoryStore) find(id modelID) (urlModel, error) {
 }
 
 func (s *memoryStore) add(model urlModel) {
+	s.delay()
 	s.models = append(s.models, model)
+}
+
+func (s *memoryStore) delay() {
+	amount := time.Duration(((rand.Int() % 10) * len(s.models))) * time.Millisecond
+	time.Sleep(amount)
 }

@@ -26,5 +26,6 @@ func main() {
 
 	api.Register(r)
 
+	log.Print("shrturl service now running localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

@@ -49,6 +49,7 @@ func (h *urlHandler) list() http.HandlerFunc {
 
 func (h *urlHandler) item() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		id := modelID(mux.Vars(r)["id"])
 		model, err := h.store.find(id)
 
@@ -57,7 +58,6 @@ func (h *urlHandler) item() http.HandlerFunc {
 			return
 		}
 
-		fmt.Printf("%+v\n", r.Header.Get("Accept"))
 		json.NewEncoder(w).Encode(model)
 	}
 }
