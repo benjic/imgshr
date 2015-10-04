@@ -33,3 +33,5 @@ MongodDB do not match the existing client interface. Fortunately, the engineers
 received a proper education and are aware of an adapter pattern that will allow
 them to integrate the new design changes.
 
+[0]: https://en.wikipedia.org/wiki/Adapter_pattern
+[1]: https://www.mongodb.org/
