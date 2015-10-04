@@ -15,23 +15,64 @@
 package urls
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
-type urlHandler struct{}
+type urlHandler struct {
+	store store
+}
+
+func newURLHandler() *urlHandler {
+	return &urlHandler{&memoryStore{models: make([]urlModel, 0)}}
+}
 
 // Register adds the urls resource to the given api instance
-func Register(register func(string, http.HandlerFunc)) (err error) {
+func Register(r *mux.Router, register func(http.HandlerFunc) http.HandlerFunc) (err error) {
 
-	urls := &urlHandler{}
-	register("/urls", urls.list())
+	urls := newURLHandler()
+	r.Methods("GET").Subrouter().HandleFunc("/urls", register(urls.list()))
+	r.Methods("GET").Subrouter().HandleFunc("/urls/{id:[a-zA-Z0-9]+}", register(urls.item()))
+	r.Methods("POST").Subrouter().HandleFunc("/urls", register(urls.add()))
 
 	return
 }
 
 func (h *urlHandler) list() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("You've made it!")
+		json.NewEncoder(w).Encode(h.store.list())
+	}
+}
+
+func (h *urlHandler) item() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := modelID(mux.Vars(r)["id"])
+		model, err := h.store.find(id)
+
+		if err == errorModelNotFound {
+			http.Error(w, "Resource Not Found", 404)
+			return
+		}
+
+		fmt.Printf("%+v\n", r.Header.Get("Accept"))
+		json.NewEncoder(w).Encode(model)
+	}
+}
+
+func (h *urlHandler) add() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		model := &urlModel{}
+
+		err := json.NewDecoder(r.Body).Decode(model)
+		model.ID = createModelID()
+
+		h.store.add(*model)
+		if err != nil {
+			fmt.Printf("Error: %s", err)
+			http.Error(w, "Bad Request", http.StatusBadRequest)
+		}
 	}
 }

@@ -35,13 +35,13 @@ func Register(router *mux.Router) (api *ShrtURLAPI) {
 	api = &ShrtURLAPI{}
 	api.router = router.PathPrefix(fmt.Sprintf("/%s", Version)).Subrouter()
 
-	urls.Register(api.handleFunc)
+	urls.Register(api.router, api.handleFunc)
 
 	return
 }
 
-func (api *ShrtURLAPI) handleFunc(path string, f http.HandlerFunc) {
-	api.router.HandleFunc(path, handleLog(handleError(f)))
+func (api *ShrtURLAPI) handleFunc(f http.HandlerFunc) http.HandlerFunc {
+	return handleLog(handleError(f))
 }
 
 func handleError(f http.HandlerFunc) http.HandlerFunc {
