@@ -31,13 +31,13 @@ const Version = "v1"
 type ShrtURLAPI struct{ router *mux.Router }
 
 // Register attaches a api to the given router.
-func Register(router *mux.Router) (api *ShrtURLAPI) {
+func Register(router *mux.Router) (api *ShrtURLAPI, err error) {
 	api = &ShrtURLAPI{}
 	api.router = router.PathPrefix(fmt.Sprintf("/%s", Version)).Subrouter()
 
-	urls.Register(api.router, api.handleFunc)
+	err = urls.Register(api.router, api.handleFunc)
 
-	return
+	return api, err
 }
 
 func (api *ShrtURLAPI) handleFunc(f http.HandlerFunc) http.HandlerFunc {

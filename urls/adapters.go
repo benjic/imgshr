@@ -20,7 +20,7 @@ type URLFastStorerAdapter struct {
 	store faststore.FastStorer
 }
 
-func newURLFastStorerAdapter(store faststore.FastStorer) *URLFastStorerAdapter {
+func createURLFastStorerAdapter(store faststore.FastStorer) *URLFastStorerAdapter {
 	return &URLFastStorerAdapter{store: store}
 }
 

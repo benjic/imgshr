@@ -16,6 +16,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/benjic/shrturl/api"
 	"github.com/gorilla/mux"
@@ -24,7 +25,12 @@ import (
 func main() {
 	r := mux.NewRouter()
 
-	api.Register(r)
+	_, err := api.Register(r)
+
+	if err != nil {
+		log.Fatalf("Unable to standup api service: %s", err)
+		os.Exit(1)
+	}
 
 	log.Print("shrturl service now running localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
