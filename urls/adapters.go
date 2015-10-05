@@ -16,14 +16,20 @@ package urls
 
 import "github.com/benjic/shrturl/faststore"
 
+// A URLFastStorerAdapter provides a interface wrapper for a faststore.FastStorer
+// mapping client calls to differing backing stores.
 type URLFastStorerAdapter struct {
 	store faststore.FastStorer
 }
 
+// createURLFastStorerAdapter provides a convience factory function for creating
+// URLFastStorerAdapters.
 func createURLFastStorerAdapter(store faststore.FastStorer) *URLFastStorerAdapter {
 	return &URLFastStorerAdapter{store: store}
 }
 
+// list implements the urls.Store interface by providing an aggregation of
+// models for available urls.
 func (a *URLFastStorerAdapter) list() (models []urlModel) {
 	fastModels, _ := a.store.AllURLs()
 	for _, model := range fastModels {
@@ -33,6 +39,8 @@ func (a *URLFastStorerAdapter) list() (models []urlModel) {
 	return models
 }
 
+// find implements the urls.Store interface by providing a way of getting
+// a single model for a given id.
 func (a *URLFastStorerAdapter) find(id modelID) (model urlModel, err error) {
 	fastModel, err := a.store.GetURL(string(id))
 
@@ -43,6 +51,8 @@ func (a *URLFastStorerAdapter) find(id modelID) (model urlModel, err error) {
 	return urlModel{ID: modelID(fastModel.Slug), URL: fastModel.URL}, err
 }
 
+// add implements the urls.Store interface by providing a way to add a new model
+// to the underlying store.
 func (a *URLFastStorerAdapter) add(model urlModel) {
 	a.store.AddURL(faststore.URLModel{Slug: string(model.ID), URL: model.URL})
 }

@@ -34,6 +34,7 @@ type store interface {
 	add(urlModel)
 }
 
+// createModelID is a helper function for building identifying slugs
 func createModelID() modelID {
 	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 

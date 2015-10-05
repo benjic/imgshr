@@ -56,7 +56,7 @@ func createMockFastStorer() *mockFastStorer {
 
 func TestURLFastStorerAdapterAdd(t *testing.T) {
 	mockStorer := createMockFastStorer()
-	adapter := newURLFastStorerAdapter(mockStorer)
+	adapter := createURLFastStorerAdapter(mockStorer)
 
 	adapter.add(urlModel{ID: "xyz", URL: "http://url"})
 
@@ -68,7 +68,7 @@ func TestURLFastStorerAdapterAdd(t *testing.T) {
 
 func TestURLFastStorerAdapterList(t *testing.T) {
 	mockStorer := createMockFastStorer()
-	adapter := newURLFastStorerAdapter(mockStorer)
+	adapter := createURLFastStorerAdapter(mockStorer)
 
 	for i, model := range adapter.list() {
 		if model.ID != modelID(mockURLModels[i].Slug) {
@@ -86,7 +86,7 @@ func TestURLFastStorerAdapterList(t *testing.T) {
 
 func TestURLFastStorerAdapterItem(t *testing.T) {
 	mockStorer := createMockFastStorer()
-	adapter := newURLFastStorerAdapter(mockStorer)
+	adapter := createURLFastStorerAdapter(mockStorer)
 
 	model, err := adapter.find(modelID("abc"))
 
@@ -111,7 +111,7 @@ func TestURLFastStorerAdapterMissingItem(t *testing.T) {
 	mockStorer := createMockFastStorer()
 	mockStorer.missingItem = true
 
-	adapter := newURLFastStorerAdapter(mockStorer)
+	adapter := createURLFastStorerAdapter(mockStorer)
 
 	model, err := adapter.find(modelID("bogus"))
 

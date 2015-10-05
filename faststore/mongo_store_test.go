@@ -13,3 +13,5 @@
 // limitations under the License.
 
 package faststore
+
+// TODO: Establish mgo mock and test MongoStorer

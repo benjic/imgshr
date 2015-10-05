@@ -23,15 +23,17 @@ import (
 )
 
 func main() {
+	// Register handlers
 	r := mux.NewRouter()
-
 	_, err := api.Register(r)
 
+	// Determine if api is functional
 	if err != nil {
 		log.Fatalf("Unable to standup api service: %s", err)
 		os.Exit(1)
 	}
 
+	// Start http server
 	log.Print("shrturl service now running localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

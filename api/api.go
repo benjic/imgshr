@@ -40,10 +40,15 @@ func Register(router *mux.Router) (api *ShrtURLAPI, err error) {
 	return api, err
 }
 
+// The handleFunc helper allows handlers to wrap their invocations with an
+// api set of logging and error handlers.
 func (api *ShrtURLAPI) handleFunc(f http.HandlerFunc) http.HandlerFunc {
 	return handleLog(handleError(f))
 }
 
+// The handleError wraps a given http.HandlerFunc with a recover statement. This
+// allows panics to occur within a handler without propagating up the call stack
+// past the handler.
 func handleError(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer func() {

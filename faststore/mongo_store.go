@@ -21,17 +21,20 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+// A URLModel abstracts the fields.
 type URLModel struct {
 	ID   bson.ObjectId `bson:"_id"`
-	Slug string        `bson:'slug'`
+	Slug string        `bson:"slug"`
 	URL  string        `bson:"url"`
 }
 
+// A URLMongoStore represents a persistent connection to a mongo backend.
 type URLMongoStore struct {
 	session    *mgo.Session
 	collection *mgo.Collection
 }
 
+// NewURLMongoStore is a factory function to return a valid URLMongoStore.
 func NewURLMongoStore(uri string) (s *URLMongoStore, err error) {
 	s = &URLMongoStore{}
 	s.session, err = mgo.Dial(uri)
@@ -43,6 +46,7 @@ func NewURLMongoStore(uri string) (s *URLMongoStore, err error) {
 	return s, err
 }
 
+// AddURL adds the given URLModel to the mongodb
 func (s *URLMongoStore) AddURL(model URLModel) {
 	model.ID = bson.NewObjectId()
 
@@ -51,6 +55,9 @@ func (s *URLMongoStore) AddURL(model URLModel) {
 		panic(err)
 	}
 }
+
+// GetURL attempts to find a record with the given slug. If no record is found
+// an error is returned.
 func (s *URLMongoStore) GetURL(id string) (model URLModel, err error) {
 
 	if err = s.collection.Find(bson.M{"slug": id}).One(&model); err != nil {
@@ -60,6 +67,7 @@ func (s *URLMongoStore) GetURL(id string) (model URLModel, err error) {
 	return model, err
 }
 
+// AllURLs aggregates all model records.
 func (s *URLMongoStore) AllURLs() (models []URLModel, err error) {
 	if err = s.collection.Find(nil).All(&models); err != nil {
 		return models, err

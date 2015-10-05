@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package faststore is a collection of stores that are optimzed and not
+// neccesarly of the same interface as a url.Store
 package faststore
 
+// A FastStorer is an interface that allows URL models to be quickly stored.
 type FastStorer interface {
 	AddURL(URLModel)
 	GetURL(id string) (URLModel, error)
