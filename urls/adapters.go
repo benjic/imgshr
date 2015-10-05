@@ -27,7 +27,7 @@ func newURLFastStorerAdapter(store faststore.FastStorer) *URLFastStorerAdapter {
 func (a *URLFastStorerAdapter) list() (models []urlModel) {
 	fastModels, _ := a.store.AllURLs()
 	for _, model := range fastModels {
-		models = append(models, urlModel{modelID(model.Slug), model.URL, ""})
+		models = append(models, urlModel{modelID(model.Slug), model.URL})
 	}
 
 	return models

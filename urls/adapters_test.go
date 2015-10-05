@@ -13,34 +13,3 @@
 // limitations under the License.
 
 package urls
-
-import (
-	"errors"
-	"math/rand"
-)
-
-var errorModelNotFound = errors.New("Model with given ID not found")
-
-type modelID string
-
-type urlModel struct {
-	ID  modelID `json:"id"`
-	URL string  `json:"url"`
-}
-
-type store interface {
-	list() []urlModel
-	find(modelID) (urlModel, error)
-	add(urlModel)
-}
-
-func createModelID() modelID {
-	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-
-	newID := make([]byte, 8)
-	for i := range newID {
-		newID[i] = chars[rand.Int63()%int64(len(chars))]
-	}
-
-	return modelID(newID)
-}
