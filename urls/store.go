@@ -24,8 +24,8 @@ var errorModelNotFound = errors.New("Model with given ID not found")
 type modelID string
 
 type urlModel struct {
-	ID  modelID
-	URL string
+	ID  modelID `json:"id"`
+	URL string  `json:"url"`
 }
 
 type store interface {
@@ -34,6 +34,7 @@ type store interface {
 	add(urlModel)
 }
 
+// createModelID is a helper function for building identifying slugs
 func createModelID() modelID {
 	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 

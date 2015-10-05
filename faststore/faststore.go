@@ -11,29 +11,14 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package main
 
-import (
-	"log"
-	"net/http"
-	"os"
+// Package faststore is a collection of stores that are optimzed and not
+// neccesarly of the same interface as a url.Store
+package faststore
 
-	"github.com/benjic/shrturl/api"
-	"github.com/gorilla/mux"
-)
-
-func main() {
-	// Register handlers
-	r := mux.NewRouter()
-	_, err := api.Register(r)
-
-	// Determine if api is functional
-	if err != nil {
-		log.Fatalf("Unable to standup api service: %s", err)
-		os.Exit(1)
-	}
-
-	// Start http server
-	log.Print("shrturl service now running localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
+// A FastStorer is an interface that allows URL models to be quickly stored.
+type FastStorer interface {
+	AddURL(URLModel)
+	GetURL(id string) (URLModel, error)
+	AllURLs() ([]URLModel, error)
 }

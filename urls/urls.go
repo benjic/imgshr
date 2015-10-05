@@ -18,8 +18,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
+	"github.com/benjic/shrturl/faststore"
 	"github.com/gorilla/mux"
 )
 
@@ -27,19 +29,25 @@ type urlHandler struct {
 	store store
 }
 
-func newURLHandler() *urlHandler {
-	return &urlHandler{&memoryStore{models: make([]urlModel, 0)}}
+func newURLHandler() (*urlHandler, error) {
+	mongoURI := os.Getenv("MONGODB_URL")
+	if mongoURI == "" {
+		return &urlHandler{&memoryStore{models: make([]urlModel, 0)}}, nil
+	}
+
+	store, err := faststore.NewURLMongoStore(mongoURI)
+	return &urlHandler{createURLFastStorerAdapter(store)}, err
 }
 
 // Register adds the urls resource to the given api instance
 func Register(r *mux.Router, register func(http.HandlerFunc) http.HandlerFunc) (err error) {
 
-	urls := newURLHandler()
+	urls, err := newURLHandler()
 	r.Methods("GET").Subrouter().HandleFunc("/urls", register(urls.list()))
 	r.Methods("GET").Subrouter().HandleFunc("/urls/{id:[a-zA-Z0-9]+}", register(urls.item()))
 	r.Methods("POST").Subrouter().HandleFunc("/urls", register(urls.add()))
 
-	return
+	return err
 }
 
 func (h *urlHandler) list() http.HandlerFunc {

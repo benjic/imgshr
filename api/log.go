@@ -20,6 +20,9 @@ import (
 	"time"
 )
 
+// A logwriter implements the ResponseWriter interface and captures the status
+// code written by a handler response. This allows the log to gather information
+// about the state of the current request.
 type logWriter struct {
 	writer     http.ResponseWriter
 	statusCode int
