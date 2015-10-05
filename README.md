@@ -31,6 +31,16 @@ machine. Once this is running you can use the command `export
 MONGODB_URL=mongodb://localhost` to enable the service to use the mongo
 persistence store.
 
+Once the service is running you can use a HTTP client to make requests to the
+api to interact with the service. 
+
+    curl -X POST -d '{"URL": "http://github.com"}' http://localhost:8080/v1/urls
+    curl http://localhost:8080/v1/urls
+    curl http://localhost:8080/v1/urls/<id>
+
+You can also visit `http://localhost:8080/v1/urls/<id>` in a browser to recive a
+redirect for the given short url.
+
 ## Initial Design
 
 The REST API allows users to POST new url's to the service and are returned a
